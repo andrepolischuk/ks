@@ -161,14 +161,37 @@
    * @param {Function} fn
    */
 
-  function on(comb, target, fn) {
+  function add(comb, target, fn) {
 
     var route = parse(comb);
-
     route.target = target;
     route.fn = fn;
 
     combs.push(route);
+
+  }
+
+  /**
+   * Detach combination
+   * @param {String} comb
+   * @param {String} target
+   */
+
+  function remove(comb, target) {
+
+    if (typeof comb !== 'string') {
+      return;
+    }
+
+    var route = parse(comb);
+    route.target = target || null;
+
+    for (var c = 0; c < combs.length; c++) {
+      if (compare(combs[c], route)) {
+        combs.splice(c, 1);
+        c--;
+      }
+    }
 
   }
 
@@ -188,7 +211,7 @@
       return;
     }
 
-    on(comb, target, fn);
+    add(comb, target, fn);
 
   }
 
@@ -199,10 +222,10 @@
   onEventListener(document, 'keydown', listener);
 
   /**
-   * API functions
+   * API export
    */
 
-  ks.on = on;
+  ks.remove = remove;
 
   /**
    * Module exports
