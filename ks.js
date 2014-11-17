@@ -6,6 +6,12 @@
   'use strict';
 
   /**
+   * Combinations
+   */
+
+  var combs = [];
+
+  /**
    * Modifier keys
    */
 
@@ -63,28 +69,129 @@
 
   /**
    * Get key code
+   * @param  {String} key
+   * @return {String}
    */
 
-  var code = function(key) {
+  function code(key) {
     return special[key] || key.toUpperCase().charCodeAt(0);
-  };
+  }
+
+  /**
+   * Add event listener
+   * @param {Object} target
+   * @param {String} event
+   * @param {Function} fn
+   */
+
+  function onEventListener(target, event, fn) {
+
+    if (target.addEventListener) {
+      target.addEventListener(event, fn, false);
+    } else {
+      target.attachEvent('on' + event, function() {
+        fn(window.event);
+      });
+    }
+
+  }
+
+  /**
+   * Compare
+   * @param {Object} event
+   * @param {Object} e
+   */
+
+  function compare(event, e) {
+
+    var id = /^#.+$/g.test(event.target);
+
+    if (event.target && id && event.target.substr(1) !== e.target.id) {
+      return false;
+    }
+
+    if (event.target && !id && event.target !== e.target.tagName.toLowerCase()) {
+      return false;
+    }
+
+    return event.keyCode === e.keyCode && event.altKey === e.altKey
+      && event.ctrlKey === e.ctrlKey && event.shiftKey === e.shiftKey;
+
+  }
+
+  /**
+   * Key event listener
+   * @param {Object} e
+   */
+
+  function listener(e) {
+
+    e.target = e.target || e.srcElement;
+
+    for (var c = 0; c < combs.length; c++) {
+      if (compare(combs[c], e)) {
+        combs[c].fn.call(e.target, e);
+      }
+    }
+
+  }
+
+  /**
+   * Attach combination
+   * @param {String} comb
+   * @param {String} target
+   * @param {Function} fn
+   */
+
+  function on(comb, target, fn) {
+
+    var route = {};
+
+    comb = comb.replace(/\s/g, "").split('+');
+
+    route.keyCode = code(comb[comb[0] in modifiers ? 1 : 0]);
+    route.altKey = comb[0] === 'alt' || comb[0] === 'option';
+    route.ctrlKey = comb[0] === 'ctrl' || comb[0] === 'control';
+    route.shiftKey = comb[0] === 'shift';
+
+    route.target = target;
+    route.fn = fn;
+
+    combs.push(route);
+
+  }
 
   /**
    * Ks module
-   * @param {String|Function} comb
+   * @param {String} comb
    * @param {String|Function} target
    * @param {Funtion} fn
    */
 
   function ks(comb, target, fn) {
 
-    fn = fn || (typeof comb === 'function' ? comb : target);
-    comb = typeof comb === 'string' ? comb : null;
+    fn = typeof target === 'function' ? target : fn;
     target = typeof target === 'string' ? target : null;
 
-    // ...
+    if (typeof fn !== 'function' || typeof comb !== 'string') {
+      return;
+    }
+
+    on(comb, target, fn);
 
   }
+
+  /**
+   * Listener initialization
+   */
+
+  onEventListener(document, 'keydown', listener);
+
+  /**
+   * API functions
+   */
+
+  ks.on = on;
 
   /**
    * Module exports
