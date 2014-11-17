@@ -98,24 +98,20 @@
 
   /**
    * Compare
-   * @param {Object} event
-   * @param {Object} e
+   * @param  {Object} event
+   * @param  {Object} e
+   * @return {Boolean}
    */
 
   function compare(event, e) {
 
-    var id = /^#.+$/g.test(event.target);
+    var target = event.target === null ? null : (typeof e.target === 'string'
+      ? e.target : (/^#.+$/g.test(event.target)
+      ? '#' + e.target.id : e.target.tagName.toLowerCase()));
 
-    if (event.target && id && event.target.substr(1) !== e.target.id) {
-      return false;
-    }
-
-    if (event.target && !id && event.target !== e.target.tagName.toLowerCase()) {
-      return false;
-    }
-
-    return event.keyCode === e.keyCode && event.altKey === e.altKey
-      && event.ctrlKey === e.ctrlKey && event.shiftKey === e.shiftKey;
+    return event.target === target && event.keyCode === e.keyCode
+      && event.altKey === e.altKey && event.ctrlKey === e.ctrlKey
+      && event.shiftKey === e.shiftKey;
 
   }
 
