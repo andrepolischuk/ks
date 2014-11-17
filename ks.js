@@ -71,6 +71,7 @@
    * Get key code
    * @param  {String} key
    * @return {String}
+   * @api private
    */
 
   function code(key) {
@@ -82,6 +83,7 @@
    * @param {Object} target
    * @param {String} event
    * @param {Function} fn
+   * @api private
    */
 
   function onEventListener(target, event, fn) {
@@ -101,23 +103,25 @@
    * @param  {Object} event
    * @param  {Object} e
    * @return {Boolean}
+   * @api private
    */
 
   function compare(event, e) {
 
-    var target = event.target === null ? null : (typeof e.target === 'string'
-      ? e.target : (/^#.+$/g.test(event.target)
-      ? '#' + e.target.id : e.target.tagName.toLowerCase()));
+    var target = event.target === null ? null : (typeof e.target === 'string' ?
+      e.target : (/^#.+$/g.test(event.target) ?
+      '#' + e.target.id : e.target.tagName.toLowerCase()));
 
-    return event.target === target && event.keyCode === e.keyCode
-      && event.altKey === e.altKey && event.ctrlKey === e.ctrlKey
-      && event.shiftKey === e.shiftKey;
+    return event.target === target && event.keyCode === e.keyCode &&
+      event.altKey === e.altKey && event.ctrlKey === e.ctrlKey &&
+      event.shiftKey === e.shiftKey;
 
   }
 
   /**
    * Key event listener
    * @param {Object} e
+   * @api private
    */
 
   function listener(e) {
@@ -136,6 +140,7 @@
    * Parse combination
    * @param  {String} comb
    * @return {Object}
+   * @api private
    */
 
   function parse(comb) {
@@ -159,6 +164,7 @@
    * @param {String} comb
    * @param {String} target
    * @param {Function} fn
+   * @api private
    */
 
   function add(comb, target, fn) {
@@ -172,34 +178,11 @@
   }
 
   /**
-   * Detach combination
-   * @param {String} comb
-   * @param {String} target
-   */
-
-  function remove(comb, target) {
-
-    if (typeof comb !== 'string') {
-      return;
-    }
-
-    var route = parse(comb);
-    route.target = target || null;
-
-    for (var c = 0; c < combs.length; c++) {
-      if (compare(combs[c], route)) {
-        combs.splice(c, 1);
-        c--;
-      }
-    }
-
-  }
-
-  /**
    * Ks module
    * @param {String} comb
    * @param {String|Function} target
    * @param {Funtion} fn
+   * @api public
    */
 
   function ks(comb, target, fn) {
@@ -216,16 +199,35 @@
   }
 
   /**
+   * Detach combination
+   * @param {String} comb
+   * @param {String} target
+   * @api public
+   */
+
+  ks.remove = function(comb, target) {
+
+    if (typeof comb !== 'string') {
+      return;
+    }
+
+    var route = parse(comb);
+    route.target = target || null;
+
+    for (var c = 0; c < combs.length; c++) {
+      if (compare(combs[c], route)) {
+        combs.splice(c, 1);
+        c--;
+      }
+    }
+
+  };
+
+  /**
    * Listener initialization
    */
 
   onEventListener(document, 'keydown', listener);
-
-  /**
-   * API export
-   */
-
-  ks.remove = remove;
 
   /**
    * Module exports
