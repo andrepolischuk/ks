@@ -137,6 +137,28 @@
   }
 
   /**
+   * Parse combination
+   * @param  {String} comb
+   * @return {Object}
+   */
+
+  function parse(comb) {
+
+    var res = {};
+
+    res.comb = comb.replace(/\s/g, "");
+    comb = comb.split('+');
+
+    res.keyCode = code(comb[comb[0] in modifiers ? 1 : 0]);
+    res.altKey = comb[0] === 'alt' || comb[0] === 'option';
+    res.ctrlKey = comb[0] === 'ctrl' || comb[0] === 'control';
+    res.shiftKey = comb[0] === 'shift';
+
+    return res;
+
+  }
+
+  /**
    * Attach combination
    * @param {String} comb
    * @param {String} target
@@ -145,14 +167,7 @@
 
   function on(comb, target, fn) {
 
-    var route = {};
-
-    comb = comb.replace(/\s/g, "").split('+');
-
-    route.keyCode = code(comb[comb[0] in modifiers ? 1 : 0]);
-    route.altKey = comb[0] === 'alt' || comb[0] === 'option';
-    route.ctrlKey = comb[0] === 'ctrl' || comb[0] === 'control';
-    route.shiftKey = comb[0] === 'shift';
+    var route = parse(comb);
 
     route.target = target;
     route.fn = fn;
