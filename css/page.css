@@ -1,0 +1,10 @@
+body {
+  background-color: #fff;
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
+
+#comb,
+#text {
+  min-height: 39px;
+}

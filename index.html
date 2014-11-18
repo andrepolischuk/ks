@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>Ks</title>
+
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+  <link href="css/page.css" rel="stylesheet">
+
+  <!--[if lt IE 9]>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.js"></script>
+  <![endif]-->
+
+</head>
+<body>
+
+  <div class="container">
+
+    <div class="page-header">
+      <h2>
+        Ks
+        <small><a href="https://github.com/andrepolischuk/ks">Github</a></small>
+      </h2>
+    </div>
+
+    <div class="row">
+
+      <div class="col-lg-6 col-lg-offset-3 col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 col-xs-12">
+        <h4>Press <code>b</code>, <code>alt+m</code>, <code>ctrl+q</code> or <code>shift+o</code></h4>
+        <pre id="comb"><code></code></pre>
+
+        <br>
+        <h4>Input text and press <code>ctrl+enter</code></h4>
+        <input type="text" class="form-control" id="text">
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+  <script src="https://cdn.rawgit.com/andrepolischuk/ks/1.0.0/ks.min.js"></script>
+
+  <script type="text/javascript">
+
+    ks('b', function() {
+      document.getElementById('comb').innerHTML = 'b';
+    });
+
+    ks('alt+m', function() {
+      document.getElementById('comb').innerHTML = 'alt+m';
+    });
+
+    ks('ctrl+q', function() {
+      document.getElementById('comb').innerHTML = 'ctrl+q';
+    });
+
+    ks('shift+o', function() {
+      document.getElementById('comb').innerHTML = 'shift+o';
+    });
+
+    ks('ctrl+enter', '#text', function() {
+       alert(document.getElementById('text').value);
+       document.getElementById('text').value = '';
+    });
+
+  </script>
+
+</body>
+</html>
