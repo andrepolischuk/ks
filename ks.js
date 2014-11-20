@@ -130,7 +130,7 @@
 
     for (var c = 0; c < combs.length; c++) {
       if (compare(combs[c], e)) {
-        combs[c].fn.call(e.target, e);
+        combs[c].fn.call(e.target, combs[c]);
       }
     }
 
