@@ -79,6 +79,23 @@
   }
 
   /**
+   * Attached keys
+   */
+
+  var attached = {};
+
+  attached.target = {};
+  attached.keys = {};
+
+  /**
+   * Detach via keyup
+   */
+
+  function detach(e) {
+    delete attached.keys[e.keyCode];
+  }
+
+  /**
    * Add event listener
    * @param {Object} target
    * @param {String} event
@@ -108,11 +125,26 @@
 
   function compare(event, e) {
 
-    var target = event.target === null ? null : (typeof e.target === 'string' ?
-      e.target : (/^#.+$/g.test(event.target) ?
-      '#' + e.target.id : e.target.tagName.toLowerCase()));
+    var target = (!event.target.id.length && !event.target.tag.length) ||
+      (event.target.id.length && event.target.id === e.target.id) ||
+      (event.target.tag.length && event.target.tag === e.target.tag) || false;
 
-    return event.target === target && event.keyCode === e.keyCode &&
+    var lengthEventInEvent = 0;
+    var lengthEvent = 0;
+
+    for (var k in e.keys) {
+      if (e.keys.hasOwnProperty(k)) {
+        lengthEventInEvent += k in event.keys ? 1 : 0;
+      }
+    }
+
+    for (k in event.keys) {
+      if (event.keys.hasOwnProperty(k)) {
+        lengthEvent++;
+      }
+    }
+
+    return target && lengthEventInEvent === lengthEvent &&
       event.altKey === e.altKey && event.ctrlKey === e.ctrlKey &&
       event.shiftKey === e.shiftKey;
 
@@ -126,10 +158,25 @@
 
   function listener(e) {
 
+    if (e.keyCode in attached.keys) {
+      return;
+    }
+
+    if (e.keyCode < 16 || e.keyCode > 18) {
+      attached.keys[e.keyCode] = true;
+    }
+
     e.target = e.target || e.srcElement;
 
+    attached.target.id = e.target.id.length ? '#' + e.target.id : '';
+    attached.target.tag = e.target.tagName.toLowerCase();
+
+    attached.altKey = e.altKey;
+    attached.ctrlKey = e.ctrlKey;
+    attached.shiftKey = e.shiftKey;
+
     for (var c = 0; c < combs.length; c++) {
-      if (compare(combs[c], e)) {
+      if (compare(combs[c], attached)) {
         combs[c].fn.call(e.target, combs[c]);
       }
     }
@@ -143,17 +190,48 @@
    * @api private
    */
 
-  function parse(comb) {
+  function parseComb(comb) {
 
     var res = {};
 
     res.comb = comb.replace(/\s/g, "");
     comb = comb.split('+');
 
-    res.keyCode = code(comb[comb[0] in modifiers ? 1 : 0]);
-    res.altKey = comb[0] === 'alt' || comb[0] === 'option';
-    res.ctrlKey = comb[0] === 'ctrl' || comb[0] === 'control';
-    res.shiftKey = comb[0] === 'shift';
+    res.keys = {};
+    res.altKey = false;
+    res.ctrlKey = false;
+    res.shiftKey = false;
+
+    for (var k = 0; k < comb.length; k++) {
+
+      if (comb[k] in modifiers) {
+        res.altKey = res.altKey || comb[k] === 'alt' || comb[k] === 'option';
+        res.ctrlKey = res.ctrlKey || comb[k] === 'ctrl' || comb[k] === 'control';
+        res.shiftKey = res.shiftKey || comb[k] === 'shift';
+      } else {
+        res.keys[code(comb[k])] = comb[k];
+      }
+
+    }
+
+    return res;
+
+  }
+
+  /**
+   * Parse target
+   * @param  {String} target
+   * @return {Object}
+   * @api private
+   */
+
+  function parseTarget(target) {
+
+    var res = {};
+
+    res.id = '';
+    res.tag = '';
+    res[/^#.+$/g.test(target) ? 'id' : 'tag'] = target;
 
     return res;
 
@@ -169,8 +247,9 @@
 
   function add(comb, target, fn) {
 
-    var route = parse(comb);
-    route.target = target;
+    var route = parseComb(comb);
+
+    route.target = parseTarget(target);
     route.fn = fn;
 
     combs.push(route);
@@ -188,7 +267,7 @@
   function ks(comb, target, fn) {
 
     fn = typeof target === 'function' ? target : fn;
-    target = typeof target === 'string' ? target : null;
+    target = typeof target === 'string' ? target : '';
 
     if (typeof fn !== 'function' || typeof comb !== 'string') {
       return;
@@ -211,8 +290,8 @@
       return;
     }
 
-    var route = parse(comb);
-    route.target = target || null;
+    var route = parseComb(comb);
+    route.target = parseTarget(target);
 
     for (var c = 0; c < combs.length; c++) {
       if (compare(combs[c], route)) {
@@ -228,6 +307,7 @@
    */
 
   onEventListener(document, 'keydown', listener);
+  onEventListener(document, 'keyup', detach);
 
   /**
    * Module exports
