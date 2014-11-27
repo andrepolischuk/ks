@@ -7,24 +7,24 @@
   Via script tag in page sources:
 
 ```html
-<script src="//cdn.rawgit.com/andrepolischuk/ks/1.0.0/ks.min.js"></script>
+<script src="//cdn.rawgit.com/andrepolischuk/ks/1.1.0/ks.min.js"></script>
 ```
 
 ## API
 
-### ks(comb[, target], fn)
+### ks(string[, target], fn)
 
-  Attach callback `fn` to specified combination and target.
+  Attach callback `fn` to specified shortcut and target.
 
-#### comb
+#### string
 
-  Keys combination `key` or `modifier+key`.
-  Can be used only one key and one modifier:
+  Shortcut string:
 
   * `m`
   * `alt+n`
   * `ctrl+q`
-  * `shift+o`
+  * `shift+alt+o`
+  * `ctrl+alt+q+b`
 
 ##### Supported modifiers
 
@@ -63,7 +63,7 @@
   * `up`
   * `right`
   * `down`
-  * `F1`-`F19`
+  * `f1`-`f19`
 
 #### target
 
@@ -72,6 +72,10 @@
   * `input`
   * `#name`
 
-### ks.remove(comb[, target])
+### ks(fn)
 
-  Detach combination.
+  Set global callback for undefined shortcuts.
+
+### ks.remove(string[, target])
+
+  Detach shortcut.
