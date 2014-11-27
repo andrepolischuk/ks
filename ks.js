@@ -64,7 +64,7 @@
    */
 
   for (var i = 1; i < 20; i++) {
-    special['F' + i] = 111 + i;
+    special['f' + i] = 111 + i;
   }
 
   /**
@@ -75,7 +75,28 @@
    */
 
   function code(key) {
-    return special[key] || key.toUpperCase().charCodeAt(0);
+    return special[key.toLowerCase()] || key.toUpperCase().charCodeAt(0);
+  }
+
+  /**
+   * Get key name
+   * @param  {Number} code
+   * @return {String}
+   * @api private
+   */
+
+  function find(code) {
+
+    var res;
+
+    for (var k in special) {
+      if (special.hasOwnProperty(k)) {
+        res = special[k] === code ? k : res;
+      }
+    }
+
+    return res || String.fromCharCode(code).toLowerCase();
+
   }
 
   /**
@@ -86,13 +107,14 @@
 
   attached.target = {};
   attached.keys = {};
+  attached.fn = null;
 
   /**
    * Detach via keyup
    */
 
   function detach(e) {
-    delete attached.keys[e.keyCode];
+    delete attached.keys[find(e.keyCode)];
   }
 
   /**
@@ -151,6 +173,27 @@
   }
 
   /**
+   * Clone
+   * @param  {Object} object
+   * @return {Object}
+   * @api private
+   */
+
+  function clone(object) {
+
+    var res = {};
+
+    for (var item in object) {
+      if (object.hasOwnProperty(item)) {
+        res[item] = typeof object[item] === 'object' ? clone(object[item]) : object[item];
+      }
+    }
+
+    return res;
+
+  }
+
+  /**
    * Key event listener
    * @param {Object} e
    * @api private
@@ -158,13 +201,13 @@
 
   function listener(e) {
 
-    if (e.keyCode in attached.keys) {
+    var key = find(e.keyCode);
+
+    if (key in attached.keys || (e.keyCode > 15 && e.keyCode < 19)) {
       return;
     }
 
-    if (e.keyCode < 16 || e.keyCode > 18) {
-      attached.keys[e.keyCode] = true;
-    }
+    attached.keys[key] = e.keyCode;
 
     e.target = e.target || e.srcElement;
 
@@ -177,8 +220,13 @@
 
     for (var c = 0; c < combs.length; c++) {
       if (compare(combs[c], attached)) {
-        combs[c].fn.call(e.target, combs[c]);
+        combs[c].fn.call(e.target, clone(combs[c]));
+        return;
       }
+    }
+
+    if (typeof attached.fn === 'function') {
+      attached.fn.call(e.target, clone(attached));
     }
 
   }
@@ -194,8 +242,7 @@
 
     var res = {};
 
-    res.comb = comb.replace(/\s/g, "");
-    comb = comb.split('+');
+    comb = comb.replace(/\s/g, "").split('+');
 
     res.keys = {};
     res.altKey = false;
@@ -209,7 +256,7 @@
         res.ctrlKey = res.ctrlKey || comb[k] === 'ctrl' || comb[k] === 'control';
         res.shiftKey = res.shiftKey || comb[k] === 'shift';
       } else {
-        res.keys[code(comb[k])] = comb[k];
+        res.keys[comb[k]] = code(comb[k]);
       }
 
     }
@@ -265,6 +312,11 @@
    */
 
   function ks(comb, target, fn) {
+
+    if (typeof comb === 'function') {
+      attached.fn = comb;
+      return;
+    }
 
     fn = typeof target === 'function' ? target : fn;
     target = typeof target === 'string' ? target : '';
