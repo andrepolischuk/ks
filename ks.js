@@ -111,6 +111,8 @@
 
   /**
    * Detach via keyup
+   * @param {Object} e
+   * @api private
    */
 
   function detach(e) {
@@ -139,53 +141,53 @@
 
   /**
    * Compare
-   * @param  {Object} event
-   * @param  {Object} e
+   * @param  {Object} ref
+   * @param  {Object} comb
    * @return {Boolean}
    * @api private
    */
 
-  function compare(event, e) {
+  function compare(ref, comb) {
 
-    var target = (!event.target.id.length && !event.target.tag.length) ||
-      (event.target.id.length && event.target.id === e.target.id) ||
-      (event.target.tag.length && event.target.tag === e.target.tag) || false;
+    var target = (!ref.target.id.length && !ref.target.tag.length) ||
+      (ref.target.id.length && ref.target.id === comb.target.id) ||
+      (ref.target.tag.length && ref.target.tag === comb.target.tag) || false;
 
     var lengthEventInEvent = 0;
     var lengthEvent = 0;
 
-    for (var k in e.keys) {
-      if (e.keys.hasOwnProperty(k)) {
-        lengthEventInEvent += k in event.keys ? 1 : 0;
+    for (var k in comb.keys) {
+      if (comb.keys.hasOwnProperty(k)) {
+        lengthEventInEvent += k in ref.keys ? 1 : 0;
       }
     }
 
-    for (k in event.keys) {
-      if (event.keys.hasOwnProperty(k)) {
+    for (k in ref.keys) {
+      if (ref.keys.hasOwnProperty(k)) {
         lengthEvent++;
       }
     }
 
     return target && lengthEventInEvent === lengthEvent &&
-      event.altKey === e.altKey && event.ctrlKey === e.ctrlKey &&
-      event.shiftKey === e.shiftKey;
+      ref.altKey === comb.altKey && ref.ctrlKey === comb.ctrlKey &&
+      ref.shiftKey === comb.shiftKey;
 
   }
 
   /**
    * Clone
-   * @param  {Object} object
+   * @param  {Object} comb
    * @return {Object}
    * @api private
    */
 
-  function clone(object) {
+  function clone(comb) {
 
     var res = {};
 
-    for (var item in object) {
-      if (object.hasOwnProperty(item)) {
-        res[item] = typeof object[item] === 'object' ? clone(object[item]) : object[item];
+    for (var k in comb) {
+      if (comb.hasOwnProperty(k)) {
+        res[k] = typeof comb[k] === 'object' ? clone(comb[k]) : comb[k];
       }
     }
 
@@ -232,31 +234,33 @@
   }
 
   /**
-   * Parse combination
-   * @param  {String} comb
+   * Parse combination string
+   * @param  {String} string
    * @return {Object}
    * @api private
    */
 
-  function parseComb(comb) {
+  function parseString(string) {
 
     var res = {};
 
-    comb = comb.replace(/\s/g, "").split('+');
+    string = string.replace(/\s/g, "").split('+');
 
     res.keys = {};
     res.altKey = false;
     res.ctrlKey = false;
     res.shiftKey = false;
 
-    for (var k = 0; k < comb.length; k++) {
+    for (var k = 0; k < string.length; k++) {
 
-      if (comb[k] in modifiers) {
-        res.altKey = res.altKey || comb[k] === 'alt' || comb[k] === 'option';
-        res.ctrlKey = res.ctrlKey || comb[k] === 'ctrl' || comb[k] === 'control';
-        res.shiftKey = res.shiftKey || comb[k] === 'shift';
+      string[k] = string[k].toLowerCase();
+
+      if (string[k] in modifiers) {
+        res.altKey = res.altKey || string[k] === 'alt' || string[k] === 'option';
+        res.ctrlKey = res.ctrlKey || string[k] === 'ctrl' || string[k] === 'control';
+        res.shiftKey = res.shiftKey || string[k] === 'shift';
       } else {
-        res.keys[comb[k]] = code(comb[k]);
+        res.keys[string[k]] = code(string[k]);
       }
 
     }
@@ -286,67 +290,66 @@
 
   /**
    * Attach combination
-   * @param {String} comb
+   * @param {String} string
    * @param {String} target
    * @param {Function} fn
    * @api private
    */
 
-  function add(comb, target, fn) {
+  function add(string, target, fn) {
 
-    var route = parseComb(comb);
+    var comb = parseString(string);
+    comb.target = parseTarget(target);
+    comb.fn = fn;
 
-    route.target = parseTarget(target);
-    route.fn = fn;
-
-    combs.push(route);
+    combs.push(comb);
 
   }
 
   /**
-   * Ks module
-   * @param {String} comb
+   * Module
+   * @param {String|Function} string
    * @param {String|Function} target
    * @param {Funtion} fn
    * @api public
    */
 
-  function ks(comb, target, fn) {
+  function ks(string, target, fn) {
 
-    if (typeof comb === 'function') {
-      attached.fn = comb;
+    if (typeof string === 'function') {
+      attached.fn = string;
       return;
     }
 
     fn = typeof target === 'function' ? target : fn;
     target = typeof target === 'string' ? target : '';
 
-    if (typeof fn !== 'function' || typeof comb !== 'string') {
+    if (typeof fn !== 'function' || typeof string !== 'string') {
       return;
     }
 
-    add(comb, target, fn);
+    add(string, target, fn);
 
   }
 
   /**
    * Detach combination
-   * @param {String} comb
+   * @param {String} string
    * @param {String} target
    * @api public
    */
 
-  ks.remove = function(comb, target) {
+  ks.remove = function(string, target) {
 
-    if (typeof comb !== 'string') {
+    if (typeof string !== 'string') {
       return;
     }
 
-    var route = parseComb(comb);
-    route.target = parseTarget(target);
+    var comb = parseString(string);
+    comb.target = parseTarget(target);
 
     for (var c = 0; c < combs.length; c++) {
-      if (compare(combs[c], route)) {
+      if (compare(combs[c], comb)) {
         combs.splice(c, 1);
         c--;
       }
