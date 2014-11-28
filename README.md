@@ -7,7 +7,7 @@
   Via script tag in page sources:
 
 ```html
-<script src="//cdn.rawgit.com/andrepolischuk/ks/1.1.0/ks.min.js"></script>
+<script src="//cdn.rawgit.com/andrepolischuk/ks/1.1.1/ks.min.js"></script>
 ```
 
 ## API
