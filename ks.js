@@ -114,7 +114,7 @@
 
   function detach(e) {
 
-    e = e || {};
+    e = e || window.event || {};
 
     if (e.keyCode) {
       delete attached.keys[find(e.keyCode)];
@@ -139,9 +139,7 @@
     if (target.addEventListener) {
       target.addEventListener(event, fn, false);
     } else {
-      target.attachEvent('on' + event, function() {
-        fn(window.event);
-      });
+      target.attachEvent('on' + event, fn);
     }
 
   }
@@ -210,6 +208,8 @@
 
   function listener(e) {
 
+    e = e || window.event;
+
     var key = find(e.keyCode);
 
     if (key in attached.keys || (e.keyCode > 15 && e.keyCode < 19)) {
@@ -229,8 +229,16 @@
 
     for (var c = 0; c < combs.length; c++) {
       if (compare(combs[c], attached)) {
+
+        if (e.preventDefault) {
+          e.preventDefault();
+        } else {
+          e.returnValue = false;
+        }
+
         combs[c].fn.call(e.target, clone(combs[c]));
         return;
+
       }
     }
 
