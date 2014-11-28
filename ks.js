@@ -104,10 +104,7 @@
    */
 
   var attached = {};
-
-  attached.target = {};
-  attached.keys = {};
-  attached.fn = null;
+  detach();
 
   /**
    * Detach via keyup
@@ -116,7 +113,17 @@
    */
 
   function detach(e) {
-    delete attached.keys[find(e.keyCode)];
+
+    e = e || {};
+
+    if (e.keyCode) {
+      delete attached.keys[find(e.keyCode)];
+    } else {
+      attached.target = {};
+      attached.keys = {};
+      attached.fn = attached.fn || null;
+    }
+
   }
 
   /**
@@ -363,6 +370,7 @@
 
   onEventListener(document, 'keydown', listener);
   onEventListener(document, 'keyup', detach);
+  onEventListener(window, 'blur', detach);
 
   /**
    * Module exports
