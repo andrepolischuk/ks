@@ -4,7 +4,8 @@ body {
   padding-bottom: 50px;
 }
 
-#comb,
-#text {
-  min-height: 39px;
+#comb {
+  display: block;
+  line-height: 40px;
+  min-height: 44px;
 }
