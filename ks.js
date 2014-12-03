@@ -352,7 +352,7 @@
     var comb = parseString(string);
     comb.target = target ? parseTarget(target) : target;
     comb.fn = fn;
-    comb.context = context;
+    comb.context = context ? context.substr(1) : context;
 
     combs.push(comb);
 
@@ -399,9 +399,14 @@
       return;
     }
 
+    if (target && target.substr(0, 1) === '@') {
+      context = target;
+      target = null;
+    }
+
     var comb = parseString(string);
     comb.target = parseTarget(target);
-    comb.context = context;
+    comb.context = context ? context.substr(1) : context;
 
     for (var c = 0; c < combs.length; c++) {
       if (compare(combs[c], comb)) {
