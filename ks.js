@@ -182,9 +182,10 @@
 
   function compare(ref, comb) {
 
-    var target = (!ref.target.id.length && !ref.target.tag.length) ||
-      (ref.target.id.length && ref.target.id === comb.target.id) ||
-      (ref.target.tag.length && ref.target.tag === comb.target.tag) || false;
+    var target = ref.target === null || (comb.target === null &&
+      comb.target === ref.target) || (ref.target.id.length &&
+      ref.target.id === comb.target.id) || (ref.target.tag.length &&
+      ref.target.tag === comb.target.tag) || false;
 
     var lengthEventInEvent = 0;
     var lengthEvent = 0;
@@ -349,7 +350,7 @@
   function add(string, target, fn, context) {
 
     var comb = parseString(string);
-    comb.target = parseTarget(target);
+    comb.target = target ? parseTarget(target) : target;
     comb.fn = fn;
     comb.context = context;
 
@@ -375,7 +376,7 @@
 
     context = typeof fn === 'string' ? fn : (context || null);
     fn = typeof target === 'function' ? target : fn;
-    target = typeof target === 'string' ? target : '';
+    target = typeof target === 'string' ? target : null;
 
     if (typeof fn !== 'function') {
       return;
