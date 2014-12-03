@@ -1,7 +1,7 @@
 // Ks © 2014 Andrey Polischuk
 // https://github.com/andrepolischuk/ks
 
-!function(undefined) {
+!function() {
 
   'use strict';
 
@@ -100,11 +100,39 @@
   }
 
   /**
+   * Find context position
+   * @param  {String} name
+   * @param  {Array} ref
+   * @return {Number}
+   * @api private
+   */
+
+  function findContext(name, ref) {
+
+    ref = ref || attached.context;
+
+    for (var c = 0; c < ref.length; c++) {
+      if (ref[c] === name) {
+        return c;
+      }
+    }
+
+    return null;
+
+  }
+
+  /**
    * Attached keys
    */
 
   var attached = {};
   detach();
+
+  /**
+   * Context
+   */
+
+  attached.context = [];
 
   /**
    * Detach via keyup
@@ -173,7 +201,12 @@
       }
     }
 
-    return target && lengthEventInEvent === lengthEvent &&
+    var context = ref.context === null || ref.context === comb.context;
+
+    context = ref.context && typeof comb.context === 'object' ?
+      findContext(ref.context, comb.context) !== null : context;
+
+    return target && context && lengthEventInEvent === lengthEvent &&
       ref.altKey === comb.altKey && ref.ctrlKey === comb.ctrlKey &&
       ref.shiftKey === comb.shiftKey;
 
@@ -192,7 +225,8 @@
 
     for (var k in comb) {
       if (comb.hasOwnProperty(k)) {
-        res[k] = typeof comb[k] === 'object' ? clone(comb[k]) : comb[k];
+        res[k] = Object.prototype.toString.call(comb[k]) === '[object Object]' ?
+          clone(comb[k]) : comb[k];
       }
     }
 
@@ -308,14 +342,16 @@
    * @param {String} string
    * @param {String} target
    * @param {Function} fn
+   * @param {String} context
    * @api private
    */
 
-  function add(string, target, fn) {
+  function add(string, target, fn, context) {
 
     var comb = parseString(string);
     comb.target = parseTarget(target);
     comb.fn = fn;
+    comb.context = context;
 
     combs.push(comb);
 
@@ -326,24 +362,26 @@
    * @param {String|Function} string
    * @param {String|Function} target
    * @param {Funtion} fn
+   * @param {String} context
    * @api public
    */
 
-  function ks(string, target, fn) {
+  function ks(string, target, fn, context) {
 
     if (typeof string === 'function') {
       attached.fn = string;
       return;
     }
 
+    context = typeof fn === 'string' ? fn : (context || null);
     fn = typeof target === 'function' ? target : fn;
     target = typeof target === 'string' ? target : '';
 
-    if (typeof fn !== 'function' || typeof string !== 'string') {
+    if (typeof fn !== 'function') {
       return;
     }
 
-    add(string, target, fn);
+    add(string, target, fn, context);
 
   }
 
@@ -354,7 +392,7 @@
    * @api public
    */
 
-  ks.remove = function(string, target) {
+  ks.remove = function(string, target, context) {
 
     if (typeof string !== 'string') {
       return;
@@ -362,6 +400,7 @@
 
     var comb = parseString(string);
     comb.target = parseTarget(target);
+    comb.context = context;
 
     for (var c = 0; c < combs.length; c++) {
       if (compare(combs[c], comb)) {
@@ -369,6 +408,44 @@
         c--;
       }
     }
+
+  };
+
+  /**
+   * Set or get context
+   * @param  {String} name
+   * @return {Array}
+   * @api public
+   */
+
+  ks.context = function(name) {
+
+    if (name && findContext(name) === null) {
+      attached.context.push(name);
+    }
+
+    return attached.context;
+
+  };
+
+  /**
+   * Remove context
+   * @param  {String} name
+   * @return {Array}
+   * @api public
+   */
+
+  ks.removeContext = function(name) {
+
+    var index = findContext(name);
+
+    if (typeof name === 'undefined') {
+      attached.context = [];
+    } else if (index !== null) {
+      attached.context.splice(index, 1);
+    }
+
+    return attached.context;
 
   };
 
