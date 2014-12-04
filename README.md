@@ -7,12 +7,12 @@
   Via script tag in page sources:
 
 ```html
-<script src="//cdn.rawgit.com/andrepolischuk/ks/1.1.1/ks.min.js"></script>
+<script src="//cdn.rawgit.com/andrepolischuk/ks/1.2.0/ks.min.js"></script>
 ```
 
 ## API
 
-### ks(string[, target], fn)
+### ks(string[, target], fn[, context])
 
   Attach callback `fn` to specified shortcut and target.
 
@@ -67,15 +67,35 @@
 
 #### target
 
-  Specified by tagname or id:
+  Bind to specified elements by tagname or id:
 
   * `input`
   * `#name`
+
+#### context
+
+  Bind to specified context, example `@auth`.
 
 ### ks(fn)
 
   Set global callback for undefined shortcuts.
 
-### ks.remove(string[, target])
+### ks.remove(string[, target, context])
 
   Detach shortcut.
+
+### ks.context(name)
+
+  Set context, example `ks.context('auth')`.
+
+### ks.context()
+
+  Get current contexts list.
+
+### ks.removeContext(name)
+
+  Remove context by name.
+
+### ks.removeContext()
+
+  Clear contexts list.
