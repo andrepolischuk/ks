@@ -142,7 +142,7 @@
 
   function detach(e) {
 
-    e = e || window.event || {};
+    e = e || {};
 
     if (e.keyCode) {
       delete attached.keys[find(e.keyCode)];
@@ -167,7 +167,9 @@
     if (target.addEventListener) {
       target.addEventListener(event, fn, false);
     } else {
-      target.attachEvent('on' + event, fn);
+      target.attachEvent('on' + event, function() {
+        fn.call(target, window.event);
+      });
     }
 
   }
@@ -242,8 +244,6 @@
    */
 
   function listener(e) {
-
-    e = e || window.event;
 
     var key = find(e.keyCode);
 
