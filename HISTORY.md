@@ -1,3 +1,10 @@
+# 1.3.0 / 2015.01.02
+
+  * Add component support #8
+  * Add npm support
+  * Fix #6 sticky keys combs in input fields
+  * Fix #7 this in attachEvent
+
 # 1.2.0 / 2014.12.04
 
   * Add attach callback to specified context #1
