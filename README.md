@@ -1,6 +1,6 @@
 # Ks
 
-  Keybord shortcuts
+  Keyboard shortcuts
 
 ## Instalation
 
