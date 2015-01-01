@@ -1,0 +1,33 @@
+{
+  "name": "ks",
+  "version": "1.3.0",
+  "description": "Keyboard shortcuts",
+  "author": {
+    "name": "Andrey Polischuk",
+    "email": "<andre.polischuk@gmail.com>"
+  },
+  "homepage": "https://github.com/andrepolischuk/ks",
+  "keywords": [
+    "key",
+    "keyboard",
+    "shortcut"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andrepolischuk/ks.git"
+  },
+  "bugs": {
+    "url": "https://github.com/andrepolischuk/ks/issues"
+  },
+  "licenses": [{
+    "type": "MIT",
+    "url": "http://github.com/andrepolischuk/ks/blob/master/LICENSE"
+  }],
+  "main": "ks.js",
+  "engines": {
+
+  },
+  "dependencies": {
+
+  }
+}
