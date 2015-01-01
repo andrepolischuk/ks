@@ -247,20 +247,24 @@
 
     var key = find(e.keyCode);
 
-    if (key in attached.keys || (e.keyCode > 15 && e.keyCode < 19)) {
+    if (e.keyCode > 15 && e.keyCode < 19) {
       return;
     }
 
-    attached.keys[key] = e.keyCode;
+    if (typeof attached.keys[key] !== 'number') {
 
-    e.target = e.target || e.srcElement;
+      attached.keys[key] = e.keyCode;
 
-    attached.target.id = e.target.id.length ? '#' + e.target.id : '';
-    attached.target.tag = e.target.tagName.toLowerCase();
+      e.target = e.target || e.srcElement;
 
-    attached.altKey = e.altKey;
-    attached.ctrlKey = e.ctrlKey;
-    attached.shiftKey = e.shiftKey;
+      attached.target.id = e.target.id.length ? '#' + e.target.id : '';
+      attached.target.tag = e.target.tagName.toLowerCase();
+
+      attached.altKey = e.altKey;
+      attached.ctrlKey = e.ctrlKey;
+      attached.shiftKey = e.shiftKey;
+
+    }
 
     for (var c = 0; c < combs.length; c++) {
       if (compare(combs[c], attached)) {
