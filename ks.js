@@ -1,5 +1,5 @@
 // Ks © 2014-2015 Andrey Polischuk
-// https://github.com/andrepolischuk/ks
+// github.com/andrepolischuk/ks
 
 !function() {
 
