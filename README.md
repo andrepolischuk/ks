@@ -4,22 +4,22 @@
 
 ## Instalation
 
-  Via script tag:
+  Browser:
 
 ```html
 <script src="https://cdn.rawgit.com/andrepolischuk/ks/1.3.0/ks.min.js"></script>
 ```
 
-  Component:
+  Component(1):
 
 ```sh
-component install andrepolischuk/ks
+$ component install andrepolischuk/ks
 ```
 
-  Node:
+  Npm:
 
 ```sh
-npm install ks
+$ npm install ks
 ```
 
 ## API
