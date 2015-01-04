@@ -1,13 +1,13 @@
 {
   "name": "ks",
-  "repo": "andrepolischuk/ks",
   "description": "Keyboard shortcuts",
+  "version": "1.3.0",
   "keywords": [
     "key",
     "keyboard",
     "shortcut"
   ],
-  "version": "1.3.0",
+  "repository": "andrepolischuk/ks",
   "main" : "ks.js",
   "scripts" : [
     "ks.js"
