@@ -1,3 +1,8 @@
+# 1.3.1 / 2015.01.05
+
+  * Fix component.json
+  * Fix package.json
+
 # 1.3.0 / 2015.01.02
 
   * Add component support #8

@@ -7,7 +7,7 @@
   Browser:
 
 ```html
-<script src="https://cdn.rawgit.com/andrepolischuk/ks/1.3.0/ks.min.js"></script>
+<script src="https://cdn.rawgit.com/andrepolischuk/ks/1.3.1/ks.min.js"></script>
 ```
 
   Component(1):
