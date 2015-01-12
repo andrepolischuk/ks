@@ -11,13 +11,7 @@
     "type": "git",
     "url": "git://github.com/andrepolischuk/ks.git"
   },
-  "dependencies": {
-
-  },
   "main": "ks.js",
-  "engines": {
-
-  },
   "author": "Andrey Polischuk <andre.polischuk@gmail.com>",
   "license": "MIT"
 }
