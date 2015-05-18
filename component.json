@@ -8,6 +8,10 @@
     "shortcut"
   ],
   "repository": "andrepolischuk/ks",
+  "dependencies": {
+    "andrepolischuk/keycodes": "^0.1.0",
+    "component/event": "^0.1.4"
+  },
   "main": "index.js",
   "scripts": [
     "index.js"
