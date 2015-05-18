@@ -6,11 +6,14 @@
  */
 
 var keycode = require('keycodes');
+var keycomb = require('keycomb');
 
 try {
   var events = require('event');
+  var clone = require('clone');
 } catch (err) {
   var events = require('component-event');
+  var clone = require('component-clone');
 }
 
 /**
@@ -79,10 +82,13 @@ function detach(e) {
   e = e || {};
 
   if (e.keyCode) {
-    delete attached.keys[keycode(e.keyCode)];
+    var index = attached.keyCode.indexOf(e.keyCode);
+    attached.keyCode.splice(index, 1);
+    attached.key.splice(index, 1);
   } else {
     attached.target = {};
-    attached.keys = {};
+    attached.keyCode = [];
+    attached.key = [];
     attached.fn = attached.fn || null;
   }
 
@@ -105,18 +111,10 @@ function compare(ref, comb) {
     ref.target.tag === comb.target.tag) || false;
 
   var lengthEventInEvent = 0;
-  var lengthEvent = 0;
+  var lengthEvent = ref.keyCode.length;
 
-  for (var k in comb.keys) {
-    if (comb.keys.hasOwnProperty(k)) {
-      lengthEventInEvent += k in ref.keys ? 1 : 0;
-    }
-  }
-
-  for (k in ref.keys) {
-    if (ref.keys.hasOwnProperty(k)) {
-      lengthEvent++;
-    }
+  for (var k = 0; k < comb.keyCode.length; k++) {
+    lengthEventInEvent += ref.keyCode.indexOf(comb.keyCode[k]) > -1 ? 1 : 0;
   }
 
   var context = ref.context === null || ref.context === comb.context;
@@ -131,29 +129,6 @@ function compare(ref, comb) {
 }
 
 /**
- * Clone
- *
- * @param  {Object} comb
- * @return {Object}
- * @api private
- */
-
-function clone(comb) {
-
-  var res = {};
-
-  for (var k in comb) {
-    if (comb.hasOwnProperty(k)) {
-      res[k] = Object.prototype.toString.call(comb[k]) === '[object Object]' ?
-        clone(comb[k]) : comb[k];
-    }
-  }
-
-  return res;
-
-}
-
-/**
  * Key event listener
  *
  * @param {Object} e
@@ -161,15 +136,15 @@ function clone(comb) {
  */
 
 function listener(e) {
-  var key = keycode(e.keyCode);
 
   if (e.keyCode > 15 && e.keyCode < 19) {
     return;
   }
 
-  if (typeof attached.keys[key] !== 'number') {
+  if (attached.keyCode.indexOf(e.keyCode) < 0) {
 
-    attached.keys[key] = e.keyCode;
+    attached.keyCode.push(e.keyCode);
+    attached.key.push(keycode(e.keyCode));
 
     e.target = e.target || e.srcElement;
 
@@ -200,43 +175,6 @@ function listener(e) {
   if (typeof attached.fn === 'function') {
     attached.fn.call(e.target, clone(attached));
   }
-
-}
-
-/**
- * Parse combination string
- *
- * @param  {String} string
- * @return {Object}
- * @api private
- */
-
-function parseString(string) {
-
-  var res = {};
-
-  string = string.replace(/\s/g, "").split('+');
-
-  res.keys = {};
-  res.altKey = false;
-  res.ctrlKey = false;
-  res.shiftKey = false;
-
-  for (var k = 0; k < string.length; k++) {
-
-    string[k] = string[k].toLowerCase();
-
-    if (string[k] in modifiers) {
-      res.altKey = res.altKey || string[k] === 'alt' || string[k] === 'option';
-      res.ctrlKey = res.ctrlKey || string[k] === 'ctrl' || string[k] === 'control';
-      res.shiftKey = res.shiftKey || string[k] === 'shift';
-    } else {
-      res.keys[string[k]] = keycode(string[k]);
-    }
-
-  }
-
-  return res;
 
 }
 
@@ -272,7 +210,7 @@ function parseTarget(target) {
 
 function add(string, target, fn, context) {
 
-  var comb = parseString(string);
+  var comb = keycomb(string);
   comb.target = target ? parseTarget(target) : target;
   comb.fn = fn;
   comb.context = context ? context.substr(1) : context;
@@ -329,7 +267,7 @@ ks.remove = function(string, target, context) {
     target = null;
   }
 
-  var comb = parseString(string);
+  var comb = keycomb(string);
   comb.target = parseTarget(target);
   comb.context = context ? context.substr(1) : context;
 
