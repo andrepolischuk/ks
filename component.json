@@ -8,9 +8,9 @@
     "shortcut"
   ],
   "repository": "andrepolischuk/ks",
-  "main" : "ks.js",
-  "scripts" : [
-    "ks.js"
+  "main": "index.js",
+  "scripts": [
+    "index.js"
   ],
   "license": "MIT"
 }

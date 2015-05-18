@@ -1,25 +1,12 @@
-# Ks
+# ks
 
-  Keyboard shortcuts
+  > Keyboard shortcuts
 
 ## Instalation
 
-  Browser:
-
-```html
-<script src="https://cdn.rawgit.com/andrepolischuk/ks/1.3.1/ks.min.js"></script>
-```
-
-  Component(1):
-
 ```sh
+$ npm install --save ks
 $ component install andrepolischuk/ks
-```
-
-  Npm:
-
-```sh
-$ npm install ks
 ```
 
 ## API
@@ -111,3 +98,7 @@ $ npm install ks
 ### ks.removeContext()
 
   Clear contexts list.
+
+## License
+
+  MIT

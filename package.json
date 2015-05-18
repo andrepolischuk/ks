@@ -7,11 +7,8 @@
     "keyboard",
     "shortcut"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/andrepolischuk/ks.git"
-  },
-  "main": "ks.js",
+  "repository": "andrepolischuk/ks",
+  "main": "index.js",
   "author": "Andrey Polischuk <andre.polischuk@gmail.com>",
   "license": "MIT"
 }
