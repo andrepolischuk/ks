@@ -86,7 +86,6 @@ function detach(e) {
     attached.keyCode.splice(index, 1);
     attached.key.splice(index, 1);
   } else {
-    attached.target = {};
     attached.keyCode = [];
     attached.key = [];
     attached.fn = attached.fn || null;
@@ -105,11 +104,6 @@ function detach(e) {
 
 function compare(ref, comb) {
 
-  var target = ref.target === null || (comb.target === null &&
-    comb.target === ref.target) || (ref.target.id.length &&
-    ref.target.id === comb.target.id) || (ref.target.tag.length &&
-    ref.target.tag === comb.target.tag) || false;
-
   var lengthEventInEvent = 0;
   var lengthEvent = ref.keyCode.length;
 
@@ -122,7 +116,7 @@ function compare(ref, comb) {
   context = ref.context && typeof comb.context === 'object' ?
     findContext(ref.context, comb.context) !== null : context;
 
-  return target && context && lengthEventInEvent === lengthEvent &&
+  return context && lengthEventInEvent === lengthEvent &&
     ref.altKey === comb.altKey && ref.ctrlKey === comb.ctrlKey &&
     ref.shiftKey === comb.shiftKey;
 
@@ -141,16 +135,12 @@ function listener(e) {
     return;
   }
 
+  e.target = e.target || e.srcElement;
+
   if (attached.keyCode.indexOf(e.keyCode) < 0) {
 
     attached.keyCode.push(e.keyCode);
     attached.key.push(keycode(e.keyCode));
-
-    e.target = e.target || e.srcElement;
-
-    attached.target.id = e.target.id.length ? '#' + e.target.id : '';
-    attached.target.tag = e.target.tagName.toLowerCase();
-
     attached.altKey = e.altKey;
     attached.ctrlKey = e.ctrlKey;
     attached.shiftKey = e.shiftKey;
@@ -179,39 +169,17 @@ function listener(e) {
 }
 
 /**
- * Parse target
- *
- * @param  {String} target
- * @return {Object}
- * @api private
- */
-
-function parseTarget(target) {
-
-  var res = {};
-
-  res.id = '';
-  res.tag = '';
-  res[/^#.+$/g.test(target) ? 'id' : 'tag'] = target;
-
-  return res;
-
-}
-
-/**
  * Attach combination
  *
  * @param {String} string
- * @param {String} target
  * @param {Function} fn
  * @param {String} context
  * @api private
  */
 
-function add(string, target, fn, context) {
+function add(string, fn, context) {
 
   var comb = keycomb(string);
-  comb.target = target ? parseTarget(target) : target;
   comb.fn = fn;
   comb.context = context ? context.substr(1) : context;
 
@@ -223,28 +191,23 @@ function add(string, target, fn, context) {
  * Module
  *
  * @param {String|Function} string
- * @param {String|Function} target
  * @param {Funtion} fn
  * @param {String} context
  * @api public
  */
 
-function ks(string, target, fn, context) {
+function ks(string, fn, context) {
 
   if (typeof string === 'function') {
     attached.fn = string;
     return;
   }
 
-  context = typeof fn === 'string' ? fn : (context || null);
-  fn = typeof target === 'function' ? target : fn;
-  target = typeof target === 'string' ? target : null;
-
   if (typeof fn !== 'function') {
     return;
   }
 
-  add(string, target, fn, context);
+  add(string, fn, context);
 
 }
 
@@ -252,23 +215,16 @@ function ks(string, target, fn, context) {
  * Detach combination
  *
  * @param {String} string
- * @param {String} target
  * @api public
  */
 
-ks.remove = function(string, target, context) {
+ks.remove = function(string, context) {
 
   if (typeof string !== 'string') {
     return;
   }
 
-  if (target && target.substr(0, 1) === '@') {
-    context = target;
-    target = null;
-  }
-
   var comb = keycomb(string);
-  comb.target = parseTarget(target);
   comb.context = context ? context.substr(1) : context;
 
   for (var c = 0; c < combs.length; c++) {
