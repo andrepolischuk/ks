@@ -5,211 +5,64 @@
  * Module dependencies
  */
 
-var keycode = require('keycodes');
 var keycomb = require('keycomb');
-
-try {
-  var events = require('event');
-  var clone = require('clone');
-} catch (err) {
-  var events = require('component-event');
-  var clone = require('component-clone');
-}
+var events = require('event');
 
 /**
- * Combinations
+ * Expose dispatcher
  */
 
-var combs = [];
+module.exports = ks;
 
 /**
- * Modifier keys
- */
-
-var modifiers = {
-  ctrl : 17,
-  control : 17,
-  alt : 18,
-  option : 18,
-  shift : 16
-};
-
-/**
- * Find scope position
+ * Dispatcher
  *
- * @param  {String} name
- * @param  {Array} ref
- * @return {Number}
- * @api private
- */
-
-function findScope(name, ref) {
-
-  ref = ref || attached.scope;
-
-  for (var c = 0; c < ref.length; c++) {
-    if (ref[c] === name) {
-      return c;
-    }
-  }
-
-  return null;
-
-}
-
-/**
- * Attached keys
- */
-
-var attached = {};
-detach();
-
-/**
- * Scope
- */
-
-attached.scope = [];
-
-/**
- * Detach via keyup
- *
- * @param {Object} e
- * @api private
- */
-
-function detach(e) {
-
-  e = e || {};
-
-  if (e.keyCode) {
-    var index = attached.keyCode.indexOf(e.keyCode);
-    attached.keyCode.splice(index, 1);
-    attached.key.splice(index, 1);
-  } else {
-    attached.keyCode = [];
-    attached.key = [];
-    attached.fn = attached.fn || null;
-  }
-
-}
-
-/**
- * Compare
- *
- * @param  {Object} ref
- * @param  {Object} comb
- * @return {Boolean}
- * @api private
- */
-
-function compare(ref, comb) {
-
-  var lengthEventInEvent = 0;
-  var lengthEvent = ref.keyCode.length;
-
-  for (var k = 0; k < comb.keyCode.length; k++) {
-    lengthEventInEvent += ref.keyCode.indexOf(comb.keyCode[k]) > -1 ? 1 : 0;
-  }
-
-  var scope = ref.scope === null || ref.scope === comb.scope;
-
-  scope = ref.scope && typeof comb.scope === 'object' ?
-    findScope(ref.scope, comb.scope) !== null : scope;
-
-  return scope && lengthEventInEvent === lengthEvent &&
-    ref.altKey === comb.altKey && ref.ctrlKey === comb.ctrlKey &&
-    ref.shiftKey === comb.shiftKey;
-
-}
-
-/**
- * Key event listener
- *
- * @param {Object} e
- * @api private
- */
-
-function listener(e) {
-
-  if (e.keyCode > 15 && e.keyCode < 19) {
-    return;
-  }
-
-  e.target = e.target || e.srcElement;
-
-  if (attached.keyCode.indexOf(e.keyCode) < 0) {
-
-    attached.keyCode.push(e.keyCode);
-    attached.key.push(keycode(e.keyCode));
-    attached.altKey = e.altKey;
-    attached.ctrlKey = e.ctrlKey;
-    attached.shiftKey = e.shiftKey;
-
-  }
-
-  for (var c = 0; c < combs.length; c++) {
-    if (compare(combs[c], attached)) {
-
-      if (e.preventDefault) {
-        e.preventDefault();
-      } else {
-        e.returnValue = false;
-      }
-
-      combs[c].fn.call(e.target, clone(combs[c]));
-      return;
-
-    }
-  }
-
-  if (typeof attached.fn === 'function') {
-    attached.fn.call(e.target, clone(attached));
-  }
-
-}
-
-/**
- * Attach combination
- *
- * @param {String} string
+ * @param {String} keys
  * @param {Function} fn
- * @param {String} scope
- * @api private
- */
-
-function add(string, fn, scope) {
-
-  var comb = keycomb(string);
-  comb.fn = fn;
-  comb.scope = scope ? scope.substr(1) : scope;
-
-  combs.push(comb);
-
-}
-
-/**
- * Module
- *
- * @param {String|Function} string
- * @param {Funtion} fn
  * @param {String} scope
  * @api public
  */
 
-function ks(string, fn, scope) {
+function ks(keys, fn, scope) {
+  if (typeof keys === 'function') return ks('*', keys, fn);
 
-  if (typeof string === 'function') {
-    attached.fn = string;
-    return;
+  if (typeof fn === 'function') {
+    ks.callbacks.push(new Route(keys, fn, scope));
+  } else {
+    ks.show(keys);
   }
-
-  if (typeof fn !== 'function') {
-    return;
-  }
-
-  add(string, fn, scope);
-
 }
+
+/**
+ * Expose callbacks
+ */
+
+ks.callbacks = [];
+
+/**
+ * Expose current
+ */
+
+ks.current = {};
+ks.current.keyCode = [];
+
+/**
+ * Expose scopes
+ */
+
+ks.scopes = [];
+
+/**
+ * Show defined context
+ *
+ * @param {String} keys
+ * @api public
+ */
+
+ks.show = function(keys) {
+  var ctx = new Context(keys);
+  execute(ctx);
+};
 
 /**
  * Detach combination
@@ -218,26 +71,18 @@ function ks(string, fn, scope) {
  * @api public
  */
 
-ks.remove = function(string, scope) {
-
-  if (typeof string !== 'string') {
-    return;
+ks.remove = function(keys, fn, scope) {
+  for (var i = 0, route; i < ks.callbacks.length; i++) {
+    route = ks.callbacks[i];
+    if (route.keys !== keys) continue;
+    if (route.fn !== fn) continue;
+    if (route.scope !== scope) continue;
+    ks.callbacks.splice(i, 1);
   }
-
-  var comb = keycomb(string);
-  comb.scope = scope ? scope.substr(1) : scope;
-
-  for (var c = 0; c < combs.length; c++) {
-    if (compare(combs[c], comb)) {
-      combs.splice(c, 1);
-      c--;
-    }
-  }
-
 };
 
 /**
- * Set or get scope
+ * Attach scope
  *
  * @param  {String} name
  * @return {Array}
@@ -245,17 +90,12 @@ ks.remove = function(string, scope) {
  */
 
 ks.scope = function(name) {
-
-  if (name && findScope(name) === null) {
-    attached.scope.push(name);
-  }
-
-  return attached.scope;
-
+  if (ks.scopes.indexOf(name) < 0) ks.scopes.push(name);
+  return ks.scopes;
 };
 
 /**
- * Remove scope
+ * Detach scope
  *
  * @param  {String} name
  * @return {Array}
@@ -263,29 +103,156 @@ ks.scope = function(name) {
  */
 
 ks.removeScope = function(name) {
-
-  var index = findScope(name);
-
-  if (typeof name === 'undefined') {
-    attached.scope = [];
-  } else if (index !== null) {
-    attached.scope.splice(index, 1);
+  if (name) {
+    ks.scopes.splice(ks.scopes.indexOf(name), 1);
+  } else {
+    ks.scopes = [];
   }
-
-  return attached.scope;
-
+  return ks.scopes;
 };
 
 /**
- * Listener initialization
+ * Start listener
  */
 
-events.bind(document, 'keydown', listener);
+events.bind(document, 'keydown', attach);
 events.bind(document, 'keyup', detach);
 events.bind(window, 'blur', detach);
 
 /**
- * Module exports
+ * Key attach
+ *
+ * @param {Object} event
+ * @api private
  */
 
-module.exports = ks;
+function attach(event) {
+  var cur = ks.current;
+  event = event || window.event;
+  event.target = event.target || event.srcElement;
+
+  if (event.keyCode > 15 && event.keyCode < 19) return;
+
+  if (cur.keyCode.indexOf(event.keyCode) < 0) {
+    cur.altKey = event.altKey;
+    cur.ctrlKey = event.ctrlKey;
+    cur.shiftKey = event.shiftKey;
+    cur.keyCode.push(event.keyCode);
+  }
+
+  var ctx = new Context(keycomb(cur).join('+'));
+
+  ctx.preventDefault = function() {
+    if (event.preventDefault) event.preventDefault();
+    event.returnValue = false;
+  };
+
+  execute(ctx);
+}
+
+/**
+ * Key detach
+ *
+ * @param {Object} event
+ * @api private
+ */
+
+function detach(event) {
+  var cur = ks.current;
+  event = event || window.event;
+  cur.keyCode.splice(cur.keyCode.indexOf(event.keyCode), 1);
+}
+
+/**
+ * Execute context
+ *
+ * @param {Object} ctx
+ * @api private
+ */
+
+function execute(ctx) {
+  var i = 0;
+
+  function next() {
+    var route = ks.callbacks[i++];
+    if (!route) return;
+    var fn = route.callback();
+    if (!fn) return;
+    fn(ctx, next);
+  }
+
+  next();
+}
+
+/**
+ * Context
+ *
+ * @param {String} keys
+ * @param {Element} target
+ * @api private
+ */
+
+function Context(keys, target) {
+  this.keys = keys;
+  this.event = keycomb(keys);
+  this.scope = ks.scopes;
+  this.target = target;
+}
+
+/**
+ * Route
+ *
+ * @param {String} keys
+ * @param {Function} fn
+ * @param {String} scope
+ * @api private
+ */
+
+function Route(keys, fn, scope) {
+  this.keys = keys;
+  this.event = keys === '*' ? keys : keycomb(keys);
+  this.fn = fn;
+  this.scope = scope;
+}
+
+/**
+ * Route callback
+ *
+ * @return {Function}
+ * @api private
+ */
+
+Route.prototype.callback = function() {
+  var self = this;
+  return function(ctx, next) {
+    if (self.match(ctx)) return self.fn(ctx, next);
+    next();
+  };
+};
+
+/**
+ * Route match
+ *
+ * @param  {Object} ctx
+ * @return {Boolean}
+ * @api private
+ */
+
+Route.prototype.match = function(ctx) {
+  var a = this.event;
+  var b = ctx.event;
+
+  if (this.scope && ctx.scope.indexOf(this.scope) < 0) return;
+  if (a === '*') return true;
+
+  if (a.keyCode.length !== b.keyCode.length) return;
+
+  for (var i = 0; i < a.keyCode.length; i++) {
+    if (b.keyCode.indexOf(a.keyCode[i]) < 0) return;
+  }
+
+  if (a.altKey !== b.altKey) return;
+  if (a.ctrlKey !== b.ctrlKey) return;
+  if (a.shiftKey !== b.shiftKey) return;
+  return true;
+};
