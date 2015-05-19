@@ -9,13 +9,10 @@
   ],
   "repository": "andrepolischuk/ks",
   "dependencies": {
-    "keycodes": "^0.1.0",
     "keycomb": "^0.1.0",
-    "component-clone": "^0.2.2",
     "component-event": "^0.1.4"
   },
   "browser": {
-    "clone": "component-clone",
     "event": "component-event"
   },
   "main": "index.js",
