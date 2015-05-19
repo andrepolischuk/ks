@@ -9,32 +9,68 @@ $ npm install --save ks
 $ component install andrepolischuk/ks
 ```
 
+## Usage
+
+```js
+var ks = require('ks');
+
+ks('enter', open);
+ks('esc', close);
+ks('ctrl+enter', send, 'edit');
+ks('ctrl+/', help);
+```
+
 ## API
 
-### ks(string[, target], fn[, context])
+### ks(keys, fn[, scope])
 
-  Attach callback `fn` to specified shortcut and target.
+  Attach `fn` to specified `keys` combinations and `scope`
 
-#### string
+```js
+ks('a', function(ctx, next) {
+  ctx.keys; // 'a'
+});
+```
 
-  Shortcut string:
+### ks(fn)
 
-  * `m`
-  * `alt+n`
-  * `ctrl+q`
-  * `shift+alt+o`
-  * `ctrl+alt+q+b`
+  Set global `fn` for all combinations
 
-##### Supported modifiers
+### ks.remove(keys, fn[, scope])
+
+  Detach `fn`
+
+### ks.scope([name])
+
+  Set specified scope
+
+```js
+ks.scope('auth'); // ['auth']
+ks.scope(); // ['auth']
+```
+
+### ks.removeScope([name])
+
+  Remove scope or clear scope list
+
+```js
+ks.scope('auth'); // ['auth']
+ks.scope('hello'); // ['auth', 'hello']
+ks.removeScope('auth'); // ['hello']
+ks.removeScope(); // []
+```
+
+## Keys
+
+### Modifiers
 
   * `ctrl`, `control`
   * `alt`, `option`
   * `shift`
 
-##### Supported special keys:
+### Special
 
-  * `escape`
-  * `esc`
+  * `escape`, `esc`
   * `` ` ``
   * `-`
   * `=`
@@ -45,8 +81,7 @@ $ component install andrepolischuk/ks
   * `]`
   * `;`
   * `'`
-  * `enter`
-  * `return`
+  * `enter`, `return`
   * `,`
   * `.`
   * `/`
@@ -63,41 +98,6 @@ $ component install andrepolischuk/ks
   * `right`
   * `down`
   * `f1`-`f19`
-
-#### target
-
-  Bind to specified elements by tagname or id:
-
-  * `input`
-  * `#name`
-
-#### context
-
-  Bind to specified context, example `@auth`.
-
-### ks(fn)
-
-  Set global callback for undefined shortcuts.
-
-### ks.remove(string[, target, context])
-
-  Detach shortcut.
-
-### ks.context(name)
-
-  Set context, example `ks.context('auth')`.
-
-### ks.context()
-
-  Get current contexts list.
-
-### ks.removeContext(name)
-
-  Remove context by name.
-
-### ks.removeContext()
-
-  Clear contexts list.
 
 ## License
 
