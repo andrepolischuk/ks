@@ -56,18 +56,21 @@ ks.scopes = [];
  * Show defined context
  *
  * @param {String} keys
+ * @param {Object} event
  * @api public
  */
 
-ks.show = function(keys) {
-  var ctx = new Context(keys);
+ks.show = function(keys, event) {
+  var ctx = new Context(keys, event);
   execute(ctx);
 };
 
 /**
  * Detach combination
  *
- * @param {String} string
+ * @param {String} keys
+ * @param {Function} fn
+ * @param {String} scope
  * @api public
  */
 
@@ -140,14 +143,7 @@ function attach(event) {
     cur.keyCode.push(event.keyCode);
   }
 
-  var ctx = new Context(keycomb(cur).join('+'));
-
-  ctx.preventDefault = function() {
-    if (event.preventDefault) event.preventDefault();
-    event.returnValue = false;
-  };
-
-  execute(ctx);
+  ks.show(keycomb(cur).join('+'), event);
 }
 
 /**
@@ -188,15 +184,20 @@ function execute(ctx) {
  * Context
  *
  * @param {String} keys
- * @param {Element} target
+ * @param {Element} event
  * @api private
  */
 
-function Context(keys, target) {
+function Context(keys, event) {
   this.keys = keys;
   this.event = keycomb(keys);
   this.scope = ks.scopes;
-  this.target = target;
+  this.target = event ? event.target : event;
+
+  this.preventDefault = event ? function() {
+    if (event.preventDefault) event.preventDefault();
+    event.returnValue = false;
+  } : function() {};
 }
 
 /**
