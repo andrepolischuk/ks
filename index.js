@@ -35,7 +35,7 @@ var modifiers = {
 };
 
 /**
- * Find context position
+ * Find scope position
  *
  * @param  {String} name
  * @param  {Array} ref
@@ -43,9 +43,9 @@ var modifiers = {
  * @api private
  */
 
-function findContext(name, ref) {
+function findScope(name, ref) {
 
-  ref = ref || attached.context;
+  ref = ref || attached.scope;
 
   for (var c = 0; c < ref.length; c++) {
     if (ref[c] === name) {
@@ -65,10 +65,10 @@ var attached = {};
 detach();
 
 /**
- * Context
+ * Scope
  */
 
-attached.context = [];
+attached.scope = [];
 
 /**
  * Detach via keyup
@@ -111,12 +111,12 @@ function compare(ref, comb) {
     lengthEventInEvent += ref.keyCode.indexOf(comb.keyCode[k]) > -1 ? 1 : 0;
   }
 
-  var context = ref.context === null || ref.context === comb.context;
+  var scope = ref.scope === null || ref.scope === comb.scope;
 
-  context = ref.context && typeof comb.context === 'object' ?
-    findContext(ref.context, comb.context) !== null : context;
+  scope = ref.scope && typeof comb.scope === 'object' ?
+    findScope(ref.scope, comb.scope) !== null : scope;
 
-  return context && lengthEventInEvent === lengthEvent &&
+  return scope && lengthEventInEvent === lengthEvent &&
     ref.altKey === comb.altKey && ref.ctrlKey === comb.ctrlKey &&
     ref.shiftKey === comb.shiftKey;
 
@@ -173,15 +173,15 @@ function listener(e) {
  *
  * @param {String} string
  * @param {Function} fn
- * @param {String} context
+ * @param {String} scope
  * @api private
  */
 
-function add(string, fn, context) {
+function add(string, fn, scope) {
 
   var comb = keycomb(string);
   comb.fn = fn;
-  comb.context = context ? context.substr(1) : context;
+  comb.scope = scope ? scope.substr(1) : scope;
 
   combs.push(comb);
 
@@ -192,11 +192,11 @@ function add(string, fn, context) {
  *
  * @param {String|Function} string
  * @param {Funtion} fn
- * @param {String} context
+ * @param {String} scope
  * @api public
  */
 
-function ks(string, fn, context) {
+function ks(string, fn, scope) {
 
   if (typeof string === 'function') {
     attached.fn = string;
@@ -207,7 +207,7 @@ function ks(string, fn, context) {
     return;
   }
 
-  add(string, fn, context);
+  add(string, fn, scope);
 
 }
 
@@ -218,14 +218,14 @@ function ks(string, fn, context) {
  * @api public
  */
 
-ks.remove = function(string, context) {
+ks.remove = function(string, scope) {
 
   if (typeof string !== 'string') {
     return;
   }
 
   var comb = keycomb(string);
-  comb.context = context ? context.substr(1) : context;
+  comb.scope = scope ? scope.substr(1) : scope;
 
   for (var c = 0; c < combs.length; c++) {
     if (compare(combs[c], comb)) {
@@ -237,42 +237,42 @@ ks.remove = function(string, context) {
 };
 
 /**
- * Set or get context
+ * Set or get scope
  *
  * @param  {String} name
  * @return {Array}
  * @api public
  */
 
-ks.context = function(name) {
+ks.scope = function(name) {
 
-  if (name && findContext(name) === null) {
-    attached.context.push(name);
+  if (name && findScope(name) === null) {
+    attached.scope.push(name);
   }
 
-  return attached.context;
+  return attached.scope;
 
 };
 
 /**
- * Remove context
+ * Remove scope
  *
  * @param  {String} name
  * @return {Array}
  * @api public
  */
 
-ks.removeContext = function(name) {
+ks.removeScope = function(name) {
 
-  var index = findContext(name);
+  var index = findScope(name);
 
   if (typeof name === 'undefined') {
-    attached.context = [];
+    attached.scope = [];
   } else if (index !== null) {
-    attached.context.splice(index, 1);
+    attached.scope.splice(index, 1);
   }
 
-  return attached.context;
+  return attached.scope;
 
 };
 
