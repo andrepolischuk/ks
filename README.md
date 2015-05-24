@@ -6,6 +6,9 @@
 
 ```sh
 $ npm install --save ks
+```
+
+```sh
 $ component install andrepolischuk/ks
 ```
 
