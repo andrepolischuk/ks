@@ -2,14 +2,14 @@
 
   > Keyboard shortcuts
 
-## Instalation
+## Install
 
 ```sh
-$ npm install --save ks
+npm install --save ks
 ```
 
 ```sh
-$ component install andrepolischuk/ks
+component install andrepolischuk/ks
 ```
 
 ## Usage
