@@ -132,8 +132,8 @@ events.bind(window, 'blur', detach);
 function attach(event) {
   var cur = ks.current;
   event = event || window.event;
-  event.target = event.target || event.srcElement;
 
+  if (!event.target) event.target = event.srcElement;
   if (event.keyCode > 15 && event.keyCode < 19) return;
 
   if (cur.keyCode.indexOf(event.keyCode) < 0) {
