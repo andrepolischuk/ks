@@ -3,74 +3,37 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-  <title>Ks</title>
-
-  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
-  <link href="css/page.css" rel="stylesheet">
-
+  <title>ks</title>
+  <link href="build/index.css" rel="stylesheet">
   <!--[if lt IE 9]>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.2/html5shiv.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/respond.js/1.4.2/respond.js"></script>
   <![endif]-->
-
 </head>
 <body>
-
-  <div class="container">
-
-    <div class="page-header">
-      <h2>
-        Ks
-        <small><a href="https://github.com/andrepolischuk/ks">Github</a></small>
-      </h2>
+  <div class="jumbotron">
+    <div class="container">
+      <h1>
+        ks
+      </h1>
+      <p>
+        Keyboard shortcuts
+      </p>
+      <p class="text-muted">
+        2.0.2
+        &middot;
+        <a href="https://github.com/andrepolischuk/ks">GitHub</a>
+      </p>
     </div>
-
-    <div class="row">
-
-      <div class="col-lg-2 col-lg-offset-5 col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3 col-xs-12">
-        <h4 class="text-center">
-          Press shortcut
-          <br><br>
-          <code id="comb"></code>
-        </h4>
-      </div>
-
-    </div>
-
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-  <script src="https://cdn.rawgit.com/andrepolischuk/ks/1.3.1/ks.min.js"></script>
+  <div class="container">
+    <h2>
+      Keys
+      <code class="keys">...</code>
+    </h2>
+  </div>
 
-  <script type="text/javascript">
-
-    ks(function(comb) {
-
-      var res = [];
-
-      if (comb.altKey) {
-        res.push('alt');
-      }
-
-      if (comb.ctrlKey) {
-        res.push('ctrl');
-      }
-
-      if (comb.shiftKey) {
-        res.push('shift');
-      }
-
-      for (var k in comb.keys) {
-        res.push(k);
-      }
-
-      document.getElementById('comb').innerHTML = res.join('+');
-
-    });
-
-  </script>
-
+  <script src="build/index.js"></script>
 </body>
 </html>
