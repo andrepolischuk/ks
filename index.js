@@ -75,7 +75,7 @@ ks.show = function(keys, event) {
  */
 
 ks.remove = function(keys, fn, scope) {
-  for (var i = 0, route; i < ks.callbacks.length; i++) {
+  for (var i = 0, route, len = ks.callbacks.length; i < len; i++) {
     route = ks.callbacks[i];
     if (route.keys !== keys) continue;
     if (route.fn !== fn) continue;
@@ -246,9 +246,10 @@ Route.prototype.match = function(ctx) {
   if (this.scope && ctx.scope.indexOf(this.scope) < 0) return;
   if (a === '*') return true;
 
-  if (a.keyCode.length !== b.keyCode.length) return;
+  var len = a.keyCode.length;
+  if (len !== b.keyCode.length) return;
 
-  for (var i = 0; i < a.keyCode.length; i++) {
+  for (var i = 0; i < len; i++) {
     if (b.keyCode.indexOf(a.keyCode[i]) < 0) return;
   }
 
