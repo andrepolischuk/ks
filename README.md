@@ -16,7 +16,6 @@ component install andrepolischuk/ks
 
 ```js
 var ks = require('ks');
-
 ks('enter', open);
 ks('esc', close);
 ks('ctrl+enter', send, 'edit');
@@ -89,7 +88,7 @@ ks.removeScope(); // []
   * `.`
   * `/`
   * `space`
-  * `pause`
+  * `pause`, `break`
   * `insert`
   * `delete`
   * `home`
@@ -100,6 +99,10 @@ ks.removeScope(); // []
   * `up`
   * `right`
   * `down`
+  * `windows`, `command`
+  * `capslock`
+  * `numlock`
+  * `scrolllock`
   * `f1`-`f19`
 
 ## License
