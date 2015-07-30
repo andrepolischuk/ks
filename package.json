@@ -9,7 +9,7 @@
   ],
   "repository": "andrepolischuk/ks",
   "dependencies": {
-    "keycomb": "^0.1.0",
+    "keycomb": "^0.1.3",
     "component-event": "^0.1.4"
   },
   "browser": {

@@ -9,7 +9,7 @@
   ],
   "repository": "andrepolischuk/ks",
   "dependencies": {
-    "andrepolischuk/keycomb": "^0.1.0",
+    "andrepolischuk/keycomb": "^0.1.3",
     "component/event": "^0.1.4"
   },
   "main": "index.js",
