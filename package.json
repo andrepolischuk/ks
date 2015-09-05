@@ -5,7 +5,7 @@
   "repository": "andrepolischuk/ks",
   "dependencies": {
     "bootstrap-gh-pages": "^0.2.1",
-    "ks": "^2.0.2"
+    "ks": "^2.0.4"
   },
   "devDependencies": {
     "babelify": "^6.1.2",
