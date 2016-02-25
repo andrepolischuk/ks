@@ -105,6 +105,14 @@ ks.removeScope(); // []
   * `scrolllock`
   * `f1`-`f19`
 
+## Related
+
+* [keycodes][keycodes] — key codes and names
+* [keycomb][keycomb] — key combinations parser
+
 ## License
 
   MIT
+
+[keycodes]: https://github.com/andrepolischuk/keycodes
+[keycomb]: https://github.com/andrepolischuk/keycomb
